@@ -9,6 +9,7 @@ Gustavo Oliveira Ribeiro - RM559163
 
 # Função de boas-vindas
 def boas_vindas():
+    """Função inicial do programa."""
     print('\n----------------------------------------------------------')
     print('BEM VINDO AO G4-TECH - ANALISADOR DE VOLTAS')
     print('----------------------------------------------------------\n')
@@ -29,6 +30,7 @@ def boas_vindas():
 
 # Função para voltar ao menu
 def voltar_ao_menu():
+    """Permite o usuário retornar ao menu do programa."""
     while True:
         retorno = input("\nDeseja voltar ao menu? (s/n): ").strip().lower()
         if retorno == 's':
@@ -127,6 +129,7 @@ def salvar_melhores_tempos(melhores_voltas, filename="melhores_tempos.txt"):
 
 # Função para garantir que a entrada seja um número inteiro
 def entrada_numero_inteiro(mensagem):
+    """Verifica se o input é um int."""
     while True:
         try:
             valor = int(input(mensagem))
@@ -136,6 +139,7 @@ def entrada_numero_inteiro(mensagem):
 
 # Função para garantir que a entrada seja um número decimal
 def entrada_numero_float(mensagem):
+    """Verifica se o input é um float."""
     while True:
         try:
             valor = float(input(mensagem))
