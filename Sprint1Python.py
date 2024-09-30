@@ -7,9 +7,10 @@ Guilherme Araujo de Carvalho - RM558926
 Gustavo Oliveira Ribeiro - RM559163
 """
 
+from typing import List, Tuple, Optional
+
 # Função de boas-vindas
-def boas_vindas():
-    """Função inicial do programa."""
+def boas_vindas() -> bool:
     print('\n----------------------------------------------------------')
     print('BEM VINDO AO G4-TECH - ANALISADOR DE VOLTAS')
     print('----------------------------------------------------------\n')
@@ -29,8 +30,7 @@ def boas_vindas():
             print("\nOpção inválida. Por favor, escolha uma opção válida.\n")
 
 # Função para voltar ao menu
-def voltar_ao_menu():
-    """Permite o usuário retornar ao menu do programa."""
+def voltar_ao_menu() -> bool:
     while True:
         retorno = input("\nDeseja voltar ao menu? (s/n): ").strip().lower()
         if retorno == 's':
@@ -44,7 +44,7 @@ def voltar_ao_menu():
             print("Entrada inválida. Por favor, responda com 's' para sim ou 'n' para não.")
 
 # Função para converter o tempo em segundos para minuto:segundo:milissegundo
-def converter_tempo(tempo):
+def converter_tempo(tempo: float) -> str:
     """Converte o tempo em segundos para o formato MM:SS:MMM."""
     minutos = int(tempo // 60)
     segundos = int(tempo % 60)
@@ -52,7 +52,7 @@ def converter_tempo(tempo):
     return f"{minutos:02}:{segundos:02}:{milissegundos:03}"
 
 # Função para encontrar o melhor e pior tempo e suas respectivas voltas
-def encontrar_melhor_pior_tempo(tempos):
+def encontrar_melhor_pior_tempo(tempos: List[float]) -> Tuple[float, float, int, int]:
     """Encontra o melhor e o pior tempo, assim como suas respectivas voltas."""
     melhor_tempo = tempos[0]
     pior_tempo = tempos[0]
@@ -70,13 +70,19 @@ def encontrar_melhor_pior_tempo(tempos):
     return melhor_tempo, pior_tempo, volta_melhor_tempo, volta_pior_tempo
 
 # Função para atualizar a lista de melhores voltas
-def atualizar_melhores_voltas(melhores_voltas, nome, tempo, volta):
+def atualizar_melhores_voltas(melhores_voltas: List[dict], nome: str, tempo: float, volta: int) -> None:
     """Atualiza a lista de melhores voltas com o novo tempo."""
     melhores_voltas.append({"nome": nome, "tempo": tempo, "volta": volta})
-    melhores_voltas.sort(key=lambda x: x["tempo"])  # Ordena pela melhor volta (menor tempo)
-
+    melhores_voltas.sort(key=lambda x: x["tempo"])  # Ordena pela melhor volta (menor tempo) 
+    
+# Função para atualizar a lista de voltas
+def atualizar_voltas(todas_voltas: List[dict], nome: str, tempos_voltas: List[float]) -> None:
+    """Atualiza a lista de voltas com todas as voltas de um piloto."""
+    for i, tempo in enumerate(tempos_voltas):
+        todas_voltas.append({"nome": nome, "tempo": tempo, "volta": i + 1})
+    
 # Função para exibir a melhor volta registrada
-def exibir_melhor_volta(melhores_voltas):
+def exibir_melhor_volta(melhores_voltas: List[dict]) -> Tuple[Optional[str], Optional[str], Optional[int]]:
     """Exibe a melhor volta registrada na lista."""
     if melhores_voltas:
         melhor_volta = melhores_voltas[0]
@@ -85,14 +91,14 @@ def exibir_melhor_volta(melhores_voltas):
         return None, None, None
 
 # Função para calcular a média dos tempos das voltas
-def calcular_media_tempos(tempos):
+def calcular_media_tempos(tempos: List[float]) -> float:
     """Calcula a média dos tempos das voltas."""
     if not tempos:
         return 0
     return sum(tempos) / len(tempos)
 
 # Função para exibir todas as melhores voltas registradas
-def exibir_todas_melhores_voltas(melhores_voltas):
+def exibir_todas_melhores_voltas(melhores_voltas: List[dict]) -> None:
     """Exibe todas as melhores voltas registradas."""
     if melhores_voltas:
         print("\nMelhores voltas registradas:")
@@ -102,21 +108,25 @@ def exibir_todas_melhores_voltas(melhores_voltas):
         print("Ainda não há melhores voltas registradas.")
 
 # Função para visualizar tempos de um piloto específico
-def visualizar_tempos_piloto(melhores_voltas, nome_piloto=""):
-    """Exibe os tempos de um piloto específico. Se nome_piloto estiver vazio, exibe todos."""
+def visualizar_tempo_piloto(todas_voltas: List[dict], nome_piloto: str = "") -> None:
+    """Exibe os tempos de um piloto específico e calcula a média de suas voltas."""
     if not nome_piloto:
         nome_piloto = input("Digite o nome do piloto: ").strip()
 
-    tempos = [volta for volta in melhores_voltas if volta["nome"].lower() == nome_piloto.lower()]
+    tempos = [volta for volta in todas_voltas if volta["nome"].lower() == nome_piloto.lower()]
     if tempos:
         print(f"\nTempos registrados para {nome_piloto}:")
         for volta in tempos:
             print(f"Tempo: {converter_tempo(volta['tempo'])} (Volta {volta['volta']})")
+        
+        # Calcular a média dos tempos
+        media = calcular_media_tempos([volta["tempo"] for volta in tempos])
+        print(f"\nMédia dos tempos de {nome_piloto}: {converter_tempo(media)}")
     else:
         print(f"Nenhum tempo registrado para o piloto {nome_piloto}.")
 
 # Função para salvar os melhores tempos em um arquivo
-def salvar_melhores_tempos(melhores_voltas, filename="melhores_tempos.txt"):
+def salvar_melhores_tempos(melhores_voltas: List[dict], filename: str = "melhores_tempos.txt") -> None:
     """Salva os melhores tempos registrados em um arquivo de texto."""
     with open(filename, "w") as file:
         file.write("Melhores Tempos Registrados\n")
@@ -128,8 +138,7 @@ def salvar_melhores_tempos(melhores_voltas, filename="melhores_tempos.txt"):
     print(f"Melhores tempos salvos em '{filename}' com sucesso!")
 
 # Função para garantir que a entrada seja um número inteiro
-def entrada_numero_inteiro(mensagem):
-    """Verifica se o input é um int."""
+def entrada_numero_inteiro(mensagem: str) -> int:
     while True:
         try:
             valor = int(input(mensagem))
@@ -138,8 +147,7 @@ def entrada_numero_inteiro(mensagem):
             print("Entrada inválida. Por favor, insira um número inteiro.")
 
 # Função para garantir que a entrada seja um número decimal
-def entrada_numero_float(mensagem):
-    """Verifica se o input é um float."""
+def entrada_numero_float(mensagem: str) -> float:
     while True:
         try:
             valor = float(input(mensagem))
@@ -149,6 +157,9 @@ def entrada_numero_float(mensagem):
 
 # Lista para armazenar os melhores tempos
 melhores_voltas = []
+
+# Lista para armazenar todos os tempos
+todas_voltas = []
 
 # Loop principal do programa
 if boas_vindas():
@@ -196,6 +207,9 @@ if boas_vindas():
 
                 # Atualizar a lista de melhores voltas
                 atualizar_melhores_voltas(melhores_voltas, nome_piloto, melhor_tempo, volta_melhor_tempo)
+                
+                # Atualizar a lista de voltas com todas as voltas
+                atualizar_voltas(todas_voltas, nome_piloto, tempos_voltas)
 
                 # Exibir os resultados
                 print("\nTempos das voltas:")
@@ -213,10 +227,10 @@ if boas_vindas():
                     print("\nAinda não há voltas registradas.")
 
             case "3":
-                if melhores_voltas:
-                    tempos = [volta["tempo"] for volta in melhores_voltas]
+                if todas_voltas:
+                    tempos = [volta["tempo"] for volta in todas_voltas]
                     media = calcular_media_tempos(tempos)
-                    print(f"\nA média dos tempos das voltas é: {converter_tempo(media)}")
+                    print(f"\nA média dos tempos de todas as voltas é: {converter_tempo(media)}")
                 else:
                     print("\nAinda não há tempos registrados para calcular a média.")
 
@@ -224,7 +238,7 @@ if boas_vindas():
                 exibir_todas_melhores_voltas(melhores_voltas)
 
             case "5":
-                visualizar_tempos_piloto(melhores_voltas)
+                visualizar_tempo_piloto(todas_voltas)
 
             case "6":
                 salvar_melhores_tempos(melhores_voltas)
